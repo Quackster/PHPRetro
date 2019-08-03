@@ -1,0 +1,162 @@
+#header h1 a {
+	float: left;
+	width: 220px;
+	height: 55px;
+	border: 0;
+	background-repeat: no-repeat;
+	background-image: url(../../housekeeping/images/header_logo.png);
+}
+
+body#installer #column1 {
+	width: auto;
+	position: static;
+
+}
+body#installer #column1 .cb {
+	margin-right: 0;
+}
+
+body#installer #column1 .box-content {
+	padding: 7px 7px 3px 0;
+}
+
+#installerform fieldset {
+	padding: 0 7px;
+	margin-top: 8px;
+}
+
+h2.heading {
+	margin: 0;
+	padding: 0 5px;
+	font-size: 18px;
+    text-align: center;
+}
+
+#installer-column-left div.rounded-container {
+	margin: 0;
+}
+
+#installerform h3 {
+	clear: both;
+	font-weight: normal;
+	font-size: 11px;
+	margin: 0;
+}
+
+#installerform p, #installerform label {
+	color: #000;
+}
+
+div.installer-description {
+	padding-bottom: 4px;
+	padding-left: 8px;
+}
+
+div.installer-label {
+	padding-bottom: 4px;
+    font-weight: bold;
+}
+
+div.installer-error {
+	padding-bottom: 7px;
+	clear: both;
+}
+
+div.installer-error div.rounded-red {
+	padding: 0 16px;
+}
+
+#installer-button-continue {
+	float: right;
+}
+
+#installer-button-cancel {
+	float: left;
+}
+
+input.installer-input, select.installer-input, textarea.installer-input {
+	border: 1px solid white;
+	padding: 3px;
+}
+
+input.installer-input-black, select.installer-input-black, textarea.installer-input {
+    border: 1px solid black;
+}
+
+input.installer-input, select.installer-input, textarea.installer-input {
+    width: 390px;
+}
+
+textarea.installer-input {
+	height: 100px;
+}
+
+#installer-column-right {
+	float: right;
+	width: 428px;
+}
+
+#installer-column-left {
+	float: left;
+    width: 269px;
+}
+
+#installer-column-left.wide {
+    width: 305px;
+}
+
+#installer-buttons {
+    position: relative;
+    width: 100%;
+    clear: both;
+	text-align: left;
+	padding-top: 10px;
+}
+
+#installer-section-left, #installer-section-right {
+    position: relative;
+    margin-top: 4px;
+}
+
+span.numbering {
+    float: left;
+}
+
+div.installer-input {
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+}
+
+#error-bubble-content.content {
+    padding: 0 5px 20px;
+}
+
+input.back {
+	font-weight: bold;
+	border: 2px solid black;
+	border-bottom-width: 4px;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	cursor: pointer;
+	color: white;
+	border-color: #54000a;
+	background: #e2001a url(./button_icons.gif) no-repeat 5% 4px;
+	padding-left: 22px;
+}
+
+.check {
+	font-weight: bold;
+}
+
+.passed {
+	color: #00FF00;
+}
+
+.failed {
+	color: #FF0000;
+}
+
+.error {
+	color: #000;
+}

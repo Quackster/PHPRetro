@@ -1,0 +1,89 @@
+ErrorDocument 404 /error.php
+Options +FollowSymlinks
+Options -Indexes
+<Files .htaccess>
+deny from all
+</Files>
+<Files ~ "\.log$">
+	Order allow,deny
+	Deny from all
+</Files>
+<ifModule mod_php5.c>
+	php_value zlib.output_compression 16386
+	php_value register_globals off
+	php_value session.use_trans_sid 0
+</ifModule>
+<ifModule mod_rewrite.c>
+RewriteEngine on
+# Uncomment the line below if the site doesn't work and you have mod_rewrite installed.
+# RewriteBase /
+RewriteRule ^web-gallery/js/local/com.js$ ./habblet/null.php
+RewriteRule ^web-gallery/styles/local/com.css$ ./habblet/null.php
+RewriteRule ^(web-gallery) - [L] 
+RewriteRule ^security_check_token$ ./security_check?type=token
+RewriteRule ^xml/promo_(.*).xml$ ./xml/promo_$1.php
+RewriteRule ^papers/(.*)$ ./papers.php?page=$1
+RewriteRule ^account/([^/]+)(/([^/]+))?$ ./account.php?var1=$1&var2=$3 [QSA]
+RewriteRule ^register/cancel$ ./register.php?registerCancel=true
+RewriteRule ^captcha.jpg$ ./captcha/captcha.php
+RewriteRule ^minimail/(.*)$ ./habblet/minimail_$1.php
+RewriteRule ^minimail/loadMessage$ ./habblet/minimail_loadMessages.php
+RewriteRule ^habblet/ajax/(.*)$ ./habblet/ajax_$1.php
+RewriteRule ^myhabbo/store/purchase_confirm$ ./habblet/myhabbo_store_purchase_confirm.php?type=$1
+RewriteRule ^myhabbo/store/purchase_(.*)$ ./habblet/myhabbo_store_purchase.php?type=$1
+RewriteRule ^myhabbo/startSession/(.*)$ ./habblet/myhabbo_homes?id=$1&type=startSession
+RewriteRule ^myhabbo/cancel/(.*)$ ./habblet/myhabbo_homes?id=$1&type=cancel
+RewriteRule ^myhabbo/save$ ./habblet/myhabbo_homes?id=$1&type=save
+RewriteRule ^myhabbo/(.*)/(.*)/(.*)$ ./habblet/myhabbo_$1_$2_$3.php
+RewriteRule ^myhabbo/(.*)/(.*)$ ./habblet/myhabbo_$1_$2.php
+RewriteRule ^quickmenu/(.*)$ ./habblet/quickmenu.php?key=$1
+RewriteRule ^grouppurchase/(.*)$ ./habblet/grouppurchase_$1.php
+RewriteRule ^habboclub/(.*)$ ./habblet/habboclub_$1.php
+RewriteRule ^profile/wardrobeStore$ ./habblet/wardrobeStore.php
+RewriteRule ^profile/(.*)$ ./profile.php?do=$1
+RewriteRule ^home/(.*)/id$ ./home.php?id=$1
+RewriteRule ^home/(.*)$ ./home.php?name=$1
+RewriteRule ^articles/archive$ ./articles.php?archive=true [QSA]
+RewriteRule ^articles/archive?pageNumber=(.*)$ ./articles.php?archive=true&pageNumber=$1
+RewriteRule ^articles/category/(.*)$ ./articles.php?category=$1
+RewriteRule ^articles/rss.xml$ ./xml/rss.php
+RewriteRule ^articles/(.*)-(.*)/in/category/(.*)$ ./articles.php?id=$1&category=$3
+RewriteRule ^articles/(.*)-(.*)/in/archive$ ./articles.php?id=$1&archive=true
+RewriteRule ^articles/(.*)-(.*)$ ./articles.php?id=$1
+RewriteRule ^habbo-imaging/badge/(.*).gif$ ./habbo-imaging/badge.php?badge=$1
+RewriteRule ^habbo-imaging/avatar/(.*),(.*),(.*).gif$ ./cache/avatars/$1,$2,$3.png
+RewriteRule ^friendmanagement/ajax/(.*)$ ./habblet/friendmanagement_$1.php
+RewriteRule ^groups/actions/(.*)/(.*)$ ./habblet/groups_actions_$1.php?id=$2 [QSA]
+RewriteRule ^groups/actions/(.*)$ ./habblet/groups_actions_$1.php
+RewriteRule ^groups/(.*)/id/discussions/page/(.*)$ ./discussions.php?id=$1&page=$2
+RewriteRule ^groups/(.*)/discussions/page/(.*)$ ./discussions.php?alias=$1&page=$2
+RewriteRule ^groups/(.*)/id/discussions/(.*)/id/page/(.*)$ ./discussions.php?id=$1&thread=$2&page=$3
+RewriteRule ^groups/(.*)/discussions/(.*)/id/page/(.*)$ ./discussions.php?alias=$1&thread=$2&page=$3
+RewriteRule ^groups/(.*)/id/discussions/(.*)/id$ ./discussions.php?id=$1&thread=$2
+RewriteRule ^groups/(.*)/discussions/(.*)/id$ ./discussions.php?alias=$1&thread=$2
+RewriteRule ^groups/(.*)/id/discussions$ ./discussions.php?id=$1
+RewriteRule ^groups/(.*)/discussions$ ./discussions.php?alias=$1
+RewriteRule ^groups/(.*)/id$ ./groups.php?id=$1
+RewriteRule ^groups/(.*)$ ./groups.php?alias=$1
+RewriteRule ^credits/club/(.*)$ ./$1.php [QSA]
+RewriteRule ^credits/(.*)$ ./$1.php [QSA]
+RewriteRule ^credits/habboclub$ ./habblet/ajax_habboclub_gift.php [QSA]
+RewriteRule ^iot/go$ ./iot.php [QSA]
+RewriteRule ^help/faqsearch$ ./help.php [QSA]
+RewriteRule ^help/(.*)$ ./help.php?id=$1
+RewriteRule ^cacheCheck$ ./habblet/null.php?return=true
+RewriteRule ^clientlog/(.*)$ ./habblet/null.php
+RewriteRule ^components/(.*)$ ./habblet/components_$1.php
+RewriteRule ^client_popup/(.*)$ ./clientutils.php?key=$1
+RewriteRule ^client_(.*)$ ././clientutils.php?key=$1 [QSA]
+RewriteRule ^tag/search?tag=(.*)$ ./tag.php?tag=$1 [QSA]
+RewriteRule ^tag/(.*)$ ./tag.php?tag=$1 [QSA]
+RewriteRule ^mod/localizations$ ./habblet/mod_localizations.php
+RewriteRule ^mod/add_(.*)_report$ ./habblet/mod_add_report.php?type=$1 [QSA]
+RewriteRule ^trax/song/(.*)$ ./habblet/trax_song.php?id=$1
+RewriteRule ^discussions/(.*)/(.*)$ ./habblet/discussions_$1_$2.php
+RewriteRule ^housekeeping/settings/(.*)$ ./housekeeping/settings.php?page=$1 [QSA]
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(([A-Za-z0-9\-_]+/)*[A-Za-z0-9\-_]+)?$ $1.php
+</ifModule>
