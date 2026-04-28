@@ -445,7 +445,7 @@ function strtotimestamp($str){
 function tinker($array){
 	foreach($array as &$item){
 		$item = stripslashes($item);
-		$item = mysql_real_escape_string($item);
+		$item = addslashes($item);
 	}
 	return $array;
 }
@@ -678,7 +678,7 @@ function migrateDB(){
 	echo "<strong>".$lang->loc['generating.cache']."...</strong><br />";
 	$page['old'] = getcwd();
 	$page['dir'] = '\install';
-	if(strpos($_SERVER['SERVER_SOFTWARE'],"Win") == false){ $page['dir'] = str_replace('\\','/',$page['dir']); }
+	if(strpos($_SERVER['SERVER_SOFTWARE'],"Win") === false){ $page['dir'] = str_replace('\\','/',$page['dir']); }
 	chdir(str_replace($page['dir'], "", getcwd()));
 	$GLOBALS['db'] = $db;
 	$GLOBALS['input'] = new HoloInput();

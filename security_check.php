@@ -53,12 +53,12 @@ if($user->error > 2){
 }
 
 $limit = (int) $settings->find("site_highload");
-if($limit != 0 && (int) GetOnlineCount() > $limit && strpos($pageid,"client") == false){
+if($limit != 0 && (int) GetOnlineCount() > $limit && strpos($pageid,"client") === false){
 	$pageid = PATH."/intermediate";
 }
 
 unset($_SESSION['page']);
-if($pageid == "" || strpos($pageid,"security_check") != false){ $pageid = PATH; }
+if($pageid == "" || strpos($pageid,"security_check") !== false){ $pageid = PATH; }
 ?>
 
 <html>

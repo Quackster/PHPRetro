@@ -25,7 +25,7 @@ session_unset();
 header("Location: ".PATH."/"); exit;
 }
 
-if(session_is_registered(username)){ header("Location: ".PATH."/"); exit; }
+if(isset($_SESSION['username'])){ header("Location: ".PATH."/"); exit; }
 //Referral
 if(isset($_GET['referral'])){
 	$referral = $input->FilterText($_GET['referral']);
@@ -200,7 +200,7 @@ $lang->addLocale("register.errors");
 		
 		$data->insert1($name,$password,$dob,$figure,$gender,$scredits);
 		$row = $serverdb->fetch_row($data->select3($name));
-		$serverdb->query("INSERT INTO ".PREFIX."users (id,name,lastvisit,online,ipaddress_last,newsletter,email_verified,show_home,email_friendrequest,email_minimail,email,show_online) VALUES ('".$row[0]."','".$row[1]."','".time()."','".time()."','".$_SERVER[REMOTE_ADDR]."','".$newsletter."','0','1','1','1','".$email."','1')");
+		$serverdb->query("INSERT INTO ".PREFIX."users (id,name,lastvisit,online,ipaddress_last,newsletter,email_verified,show_home,email_friendrequest,email_minimail,email,show_online) VALUES ('".$row[0]."','".$row[1]."','".time()."','".time()."','".$_SERVER['REMOTE_ADDR']."','".$newsletter."','0','1','1','1','".$email."','1')");
 		if($scredits > 0){
 			$db->query("INSERT INTO ".PREFIX."transactions (userid,time,amount,descr) VALUES ('".$row[0]."','".time()."','".$scredits."','Welcome to " . $sitename . "!')");
 		}

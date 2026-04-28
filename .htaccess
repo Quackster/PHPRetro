@@ -8,9 +8,8 @@ deny from all
 	Order allow,deny
 	Deny from all
 </Files>
-<ifModule mod_php5.c>
+<ifModule mod_php.c>
 	php_value zlib.output_compression 16386
-	php_value register_globals off
 	php_value session.use_trans_sid 0
 </ifModule>
 <ifModule mod_rewrite.c>

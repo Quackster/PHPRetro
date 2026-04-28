@@ -87,7 +87,7 @@
       var $sFileType;
       var $sCode = '';
       
-      function PhpCaptcha(
+      function __construct(
          $aFonts, // array of TrueType fonts to use - specify full path
          $iWidth = CAPTCHA_WIDTH, // width of image
          $iHeight = CAPTCHA_HEIGHT // height of image
@@ -409,9 +409,9 @@
       var $sAudioPath;
       var $sCode;
       
-      function AudioPhpCaptcha(
-         $sFlitePath = CAPTCHA_FLITE_PATH, // path to flite binary
-         $sAudioPath = CAPTCHA_AUDIO_PATH // the location to temporarily store the generated audio CAPTCHA
+      function __construct(
+         $sFlitePath = CAPTCHA_FLITE_PATH,
+         $sAudioPath = CAPTCHA_AUDIO_PATH
       ) {
          $this->SetFlitePath($sFlitePath);
          $this->SetAudioPath($sAudioPath);
@@ -478,10 +478,9 @@
    }
    
    // example sub class
-   class PhpCaptchaColour extends PhpCaptcha {
-      function PhpCaptchaColour($aFonts, $iWidth = CAPTCHA_WIDTH, $iHeight = CAPTCHA_HEIGHT) {
-         // call parent constructor
-         parent::PhpCaptcha($aFonts, $iWidth, $iHeight);
+    class PhpCaptchaColour extends PhpCaptcha {
+       function __construct($aFonts, $iWidth = CAPTCHA_WIDTH, $iHeight = CAPTCHA_HEIGHT) {
+          parent::__construct($aFonts, $iWidth, $iHeight);
          
          // set options
          $this->UseColour(true);

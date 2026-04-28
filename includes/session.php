@@ -33,7 +33,7 @@ if($user->error > 2){
 
 if(!isset($_SESSION['user']) && $page['allow_guests'] != true){
 	if(!isset($page['dir'])){ $_SESSION['page'] = $_SERVER["REQUEST_URI"]; }
-	if(strrpos($_SESSION['page'],"client") != false){ header("Location: ".PATH."/login_popup"); }else{ header("Location: ".PATH."/"); } exit;
+	if(strrpos($_SESSION['page'],"client") !== false){ header("Location: ".PATH."/login_popup"); }else{ header("Location: ".PATH."/"); } exit;
 }elseif(!isset($_SESSION['user']) && $page['allow_guests'] == true){
 	if(!isset($page['dir'])){ $_SESSION['page'] = $_SERVER["REQUEST_URI"]; }
 }

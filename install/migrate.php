@@ -97,7 +97,7 @@ if ($handle = opendir('../includes/languages')) {
     	$filename = '../includes/languages/'.$file;
         $fh = fopen($filename, 'r');
         $contents = fread($fh, filesize($filename));
-        $lines = split("\n", $contents);
+        $lines = explode("\n", $contents);
         $name = str_replace('Name: ','',$lines[2]);
         if(isset($_SESSION['settings']['s_site_language']) && $_SESSION['settings']['s_site_language'] == str_replace('.php','',$file)){ $selected = ' selected="true"'; }
         $form .= '<option value="'.str_replace('.php','',$file).'"'.$selected.'>'.$name.'</option>';
@@ -122,7 +122,7 @@ if(!function_exists('apache_get_modules')){
 		return array();
 	}
 }
-$passed['php_version'] = ((version_compare(PHP_VERSION, '5.0.0') < 0) ? false : true);
+$passed['php_version'] = ((version_compare(PHP_VERSION, '8.0.0') < 0) ? false : true);
 $passed['apache'] = (apache_get_version() ? true : false);
 $passed['mod_rewrite'] = (in_array('mod_rewrite',apache_get_modules()) ? true : false);
 $passed['premission_cache'] = (is_writable('../cache/') ? true : false);

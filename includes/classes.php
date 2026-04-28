@@ -17,11 +17,19 @@
 
 if(!defined("IN_HOLOCMS")) { header("Location: ".PATH); exit; }
 
+if(!function_exists('mysqli_result')){
+	function mysqli_result($res, $row = 0, $col = 0){
+		if($row >= mysqli_num_rows($res)){ return false; }
+		mysqli_data_seek($res, $row);
+		$datarow = mysqli_fetch_array($res, MYSQLI_BOTH);
+		return $datarow[$col];
+	}
+}
+
 class HoloInput {
 	function FilterText($str) {
-		if(get_magic_quotes_gpc()){ $str = stripslashes($str); }
 		$str = preg_replace(array('/\x{0001}/u','/\x{0002}/u','/\x{0003}/u','/\x{0005}/u','/\x{0009}/u'),' ',$str);
-		if($GLOBALS['conn']['main']['server'] == "mysql" || $GLOBALS['conn']['server']['server'] == "mysql"){ $str = mysql_real_escape_string($str); }else{ $str = addslashes($str); }
+		if($GLOBALS['conn']['main']['server'] == "mysql" || $GLOBALS['conn']['server']['server'] == "mysql"){ $str = mysqli_real_escape_string($GLOBALS['serverdb']->connection, $str); }else{ $str = addslashes($str); }
 		return $str;
 	}
 	function HoloText($str, $advanced=false) {
@@ -154,8 +162,8 @@ class HoloInput {
 }
 class HoloUser {
 	var $id = 0; var $name = "Guest"; var $password = null; var $logged_in = false; var $ip = null; var $time = null;
-	var $error = 0; var $banned; var $user = array('0','Guest','null','0',null,null,null,null,null,null,null,null,null);
-	function HoloUser($name,$password,$updateuser=false,$rememberme=null){
+	var $error = 0; var $banned; var $user = array('0','Guest','null','0',null,null,null,null,null,null,null,null,null); var $figure;
+	function __construct($name,$password,$updateuser=false,$rememberme=null){
 		$data = new index_sql;
 		$date = HoloDate();
 		if(empty($name) || empty($password)){
@@ -291,7 +299,7 @@ class HoloUser {
 			$day = $tmp[0];
 			$month = $tmp[1];
 			$year = $tmp[2];
-			$then = mktime(0, 0, 0, $month, $day, $year, 0);
+			$then = mktime(0, 0, 0, $month, $day, $year);
 			$now = time();
 			$difference = $now - $then;
 			if ($difference < 0){
@@ -372,20 +380,27 @@ class HoloDatabase {
 	var $connection;
 	var $error;
 	var $lastquery;
-	function HoloDatabase($conn){
+	function __construct($conn){
 		switch($conn['server']){
 			case "mysql":
-				$this->connection = mysql_connect($conn['host'].":".$conn['port'], $conn['username'], $conn['password'], true);
-				mysql_select_db($conn['database'],$this->connection) or $this->error = mysql_error();
+				$this->connection = mysqli_connect($conn['host'], $conn['username'], $conn['password'], $conn['database'], $conn['port']);
+				if($this->connection === false){ $this->error = mysqli_connect_error(); }
 				break;
 			case "pgsql":
 				$this->connection = pg_connect("host=".$conn['host']." port=".$conn['port']." dbname=".$conn['database']." user=".$conn['username']." password=".$conn['password']);
 				break;
-			case "sqlite":
-				$this->connection = sqlite_open($conn['host'], 0666, $this->error);
+				case "sqlite":
+				$this->connection = new SQLite3($conn['host']);
 				break;
 			case "mssql":
-				$this->connection = mssql_connect($conn['host'].",".$conn['port'],$conn['username'],$conn['password'],true);
+				$serverInfo = explode(",", $conn['host']);
+				$this->connection = sqlsrv_connect($serverInfo[0], array(
+					'UID' => $conn['username'],
+					'PWD' => $conn['password'],
+					'Database' => $conn['database'],
+					'CharacterSet' => 'UTF-8'
+				));
+				if($this->connection === false){ $this->error = print_r(sqlsrv_errors(), true); }
 				break;
 		}
 	}
@@ -393,36 +408,36 @@ class HoloDatabase {
 class mysql extends HoloDatabase {
 	function query($query){
 		if(defined('DEBUG')){ $this->lastquery = $query; }
-		$query = mysql_query($query,$this->connection);
+		$query = mysqli_query($this->connection, $query);
 		return $query;
 	}
 	function fetch_assoc($query){
-		$result = mysql_fetch_assoc($query);
-		if(defined('DEBUG')){ $error = mysql_error($this->connection); if($result == false && !empty($error)){ echo $error . "<br />Query that errored: ".$this->lastquery; } }
+		$result = mysqli_fetch_assoc($query);
+		if(defined('DEBUG')){ $error = mysqli_error($this->connection); if($result == false && !empty($error)){ echo $error . "<br />Query that errored: ".$this->lastquery; } }
 		return $result;
 	}
 	function fetch_row($query){
-		$result = mysql_fetch_row($query);
-		if(defined('DEBUG')){ $error = mysql_error($this->connection); if($result == false && !empty($error)){ echo $error . "<br />Query that errored: ".$this->lastquery; } }
+		$result = mysqli_fetch_row($query);
+		if(defined('DEBUG')){ $error = mysqli_error($this->connection); if($result == false && !empty($error)){ echo $error . "<br />Query that errored: ".$this->lastquery; } }
 		return $result;
 	}
 	function fetch_array($result,$result_type=0){
-		$result = mysql_fetch_array($result,$result_type);
-		if(defined('DEBUG')){ $error = mysql_error($this->connection); if($result == false && !empty($error)){ echo $error . "<br />Query that errored: ".$this->lastquery; } }
+		$result = mysqli_fetch_array($result,$result_type);
+		if(defined('DEBUG')){ $error = mysqli_error($this->connection); if($result == false && !empty($error)){ echo $error . "<br />Query that errored: ".$this->lastquery; } }
 		return $result;
 	}
 	function num_rows($query){
-		$result = mysql_num_rows($query);
-		if(defined('DEBUG')){ $error = mysql_error($this->connection); if($result == false && !empty($error)){ echo $error . "<br />Query that errored: ".$this->lastquery; } }
+		$result = mysqli_num_rows($query);
+		if(defined('DEBUG')){ $error = mysqli_error($this->connection); if($result == false && !empty($error)){ echo $error . "<br />Query that errored: ".$this->lastquery; } }
 		return $result;
 	}
 	function result($query,$row=0,$column=0){
-		$result = mysql_result($query,$row,$column);
-		if(defined('DEBUG')){ if($result == false){ echo mysql_error($this->connection) . "<br />Query that errored: ".$this->lastquery; } }
+		$result = mysqli_result($query,$row,$column);
+		if(defined('DEBUG')){ if($result == false){ echo mysqli_error($this->connection) . "<br />Query that errored: ".$this->lastquery; } }
 		return $result;
 	}
 	function insert_id($query=null){
-		return mysql_insert_id($this->connection);
+		return mysqli_insert_id($this->connection);
 	}
 }
 class pgsql extends HoloDatabase {
@@ -463,77 +478,76 @@ class pgsql extends HoloDatabase {
 class sqlite extends HoloDatabase {
 	function query($query){
 		if(defined('DEBUG')){ $this->lastquery = $query; }
-		$query = sqlite_query($query,$this->connection);
-		return $query;
+		$result = $this->connection->query($query);
+		return $result;
 	}
 	function fetch_assoc($query){
-		$result = sqlite_fetch_all($query);
-		if(defined('DEBUG')){ $error = sqlite_last_error($this->connection); if($result == false && !empty($error)){ echo $error . "<br />Query that errored: ".$this->lastquery; } }
+		$result = $query->fetchArray(SQLITE3_ASSOC);
 		return $result;
 	}
 	function fetch_row($query){
-		$result = sqlite_fetch_all($query,SQLITE_NUM);
-		if(defined('DEBUG')){ $error = sqlite_last_error($this->connection); if($result == false && !empty($error)){ echo $error . "<br />Query that errored: ".$this->lastquery; } }
+		$result = $query->fetchArray(SQLITE3_NUM);
 		return $result;
 	}
 	function fetch_array($result,$result_type=0){
-		$result = sqlite_fetch_array($result,$result_type);
-		if(defined('DEBUG')){ $error = sqlite_last_error($this->connection); if($result == false && !empty($error)){ echo $error . "<br />Query that errored: ".$this->lastquery; } }
+		$result = $result->fetchArray($result_type);
 		return $result;
 	}
 	function num_rows($query){
-		$result = sqlite_num_rows($query);
-		if(defined('DEBUG')){ $error = sqlite_last_error($this->connection); if($result == false && !empty($error)){ echo $error . "<br />Query that errored: ".$this->lastquery; } }
-		return $result;
+		$count = 0;
+		while($query->fetchArray()){ $count++; }
+		$query->reset();
+		return $count;
 	}
 	function result($query,$row=0,$column=0){
-		sqlite_seek($query,$row);
-		$result = sqlite_fetch_array($query);
-		$result = $result[$column];
-		if(defined('DEBUG')){ if($result == false){ echo sqlite_last_error($this->connection) . "<br />Query that errored: ".$this->lastquery; } }
-		return $result;
+		$i = 0;
+		while($res = $query->fetchArray(SQLITE3_BOTH)){
+			if($i == $row){ return $res[$column]; }
+			$i++;
+		}
+		return false;
 	}
 	function insert_id($query){
-		return sqlite_last_insert_rowid($this->connection);
+		return $this->connection->lastInsertRowID();
 	}
 }
 class mssql extends HoloDatabase {
 	function query($query){
 		if(defined('DEBUG')){ $this->lastquery = $query; }
-		$query = mssql_query($query,$this->connection);
-		return $query;
+		$result = sqlsrv_query($this->connection, $query);
+		if($result === false && defined('DEBUG')){ echo print_r(sqlsrv_errors(), true) . "<br />Query that errored: ".$this->lastquery; }
+		return $result;
 	}
 	function fetch_assoc($query){
-		$result = mssql_fetch_assoc($query);
-		if(defined('DEBUG')){ $error = mssql_get_last_message(); if($result == false && !empty($error)){ echo $error . "<br />Query that errored: ".$this->lastquery; } }
+		$result = sqlsrv_fetch_array($query, SQLSRV_FETCH_ASSOC);
 		return $result;
 	}
 	function fetch_row($query){
-		$result = mssql_fetch_row($query);
-		if(defined('DEBUG')){ $error = mssql_get_last_message(); if($result == false && !empty($error)){ echo $error . "<br />Query that errored: ".$this->lastquery; } }
+		$result = sqlsrv_fetch_array($query, SQLSRV_FETCH_NUMERIC);
 		return $result;
 	}
 	function fetch_array($result,$result_type=0){
-		$result = mssql_fetch_array($result,$result_type);
-		if(defined('DEBUG')){ $error = mssql_get_last_message(); if($result == false && !empty($error)){ echo $error . "<br />Query that errored: ".$this->lastquery; } }
+		$result = sqlsrv_fetch_array($result, SQLSRV_FETCH_BOTH);
 		return $result;
 	}
 	function num_rows($query){
-		$result = mssql_num_rows($query);
-		if(defined('DEBUG')){ $error = mssql_get_last_message(); if($result == false && !empty($error)){ echo $error . "<br />Query that errored: ".$this->lastquery; } }
+		$result = sqlsrv_num_rows($query);
 		return $result;
 	}
 	function result($query,$row=0,$column=0){
-		$result = mssql_result($query,$row,$column);
-		if(defined('DEBUG')){ if($result == false){ echo mssql_get_last_message() . "<br />Query that errored: ".$this->lastquery; } }
-		return $result;
+		sqlsrv_fetch($query, $row + 1);
+		$field = sqlsrv_get_field($query, $column);
+		return $field;
 	}
 	function insert_id($query){
-		return mssql_result(mssql_query("SELECT @@identity"),0);
+		$id_result = sqlsrv_query($this->connection, "SELECT @@identity AS id");
+		$row = sqlsrv_fetch_array($id_result, SQLSRV_FETCH_NUMERIC);
+		return $row[0];
 	}
 }
 class HoloLocale {
 	var $loc = array();
+	var $location;
 	function addLocale($keys){
 		if(is_array($keys)){
 			foreach($keys as $key){
@@ -554,7 +568,7 @@ class HoloLocale {
 }
 class HoloFigureCheck {
 	var $error = 0;
-	function HoloFigureCheck($figure=null,$gender=null,$club=false){
+	function __construct($figure=null,$gender=null,$club=false){
 		if(empty($figure)){ $this->error = 12; return false; }
 		$xml = simplexml_load_file('./xml/figuredata.xml');
 		$sets = explode(".",$figure);
@@ -646,7 +660,7 @@ class HoloFigureCheck {
 }
 class HoloSettings {
 	var $cache;
-	function HoloSettings(){
+	function __construct(){
 		@include('./cache/settings.ret');
 		if(isset($setting)){ $this->cache = $setting; }
 		return true;
@@ -664,7 +678,7 @@ class HoloSettings {
 		}else{
 			@unlink('./cache/settings.ret');
 		}
-		$this->HoloSettings();
+		$this->__construct();
 		return true;
 	}
 	function find($key){

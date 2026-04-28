@@ -17,12 +17,12 @@
 
 define("IN_HOLOCMS", TRUE);
 
-if(strpos($_SERVER['SERVER_SOFTWARE'],"Win") == false){ $page['dir'] = str_replace('\\','/',$page['dir']); }
+if(strpos($_SERVER['SERVER_SOFTWARE'],"Win") === false){ $page['dir'] = str_replace('\\','/',$page['dir']); }
 chdir(str_replace($page['dir'], "", getcwd()));
 
 if(@ini_get('date.timezone') == null && function_exists("date_default_timezone_get")){ @date_default_timezone_set("America/Los_Angeles"); }
 
-if(strpos($page['dir'],'habblet') && (empty($_SERVER['HTTP_X_REQUESTED_WITH']) || $_SERVER['HTTP_X_REQUESTED_WITH'] != 'XMLHttpRequest') && $page['no_ajax'] != true){ header('Location: ../'); exit; }
+if(strpos($page['dir'],'habblet') !== false && (empty($_SERVER['HTTP_X_REQUESTED_WITH']) || $_SERVER['HTTP_X_REQUESTED_WITH'] != 'XMLHttpRequest') && $page['no_ajax'] != true){ header('Location: ../'); exit; }
 
 if(!include_once('./includes/config.php')){ if(file_exists('./install/config.php')){ echo "<h1>Please move ./install/config.php to ./includes/config.php to continue.</h1>"; }elseif(file_exists('./install/index.php')){ header('Location: ./install/'); }else{ echo "<h1>Cannot find config.php in includes folder. Cannot find the install folder either. Did you copy all the files?"; } exit; }
 define("PREFIX", $conn['main']['prefix']);

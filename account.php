@@ -26,7 +26,7 @@ $var = $_GET['var1'];
 $var2 = $_GET['var2'];
 $date = HoloDate();
 
-if(!isset($_POST['page']) && session_is_registered(page)){ $_POST['page'] = $_SESSION['page']; }
+if(!isset($_POST['page']) && isset($_SESSION['page'])){ $_POST['page'] = $_SESSION['page']; }
 
 switch($var){
 case "submit":
